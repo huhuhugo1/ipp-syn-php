@@ -139,7 +139,7 @@ function parseFormatFile() {
     $format_file = fopen($format_path, "r");
     while ($row = fgets($format_file)) {
         $row = mb_ereg_replace ("\n$", "", $row);
-        $row = mb_split("\t+", $row);
+        $row = mb_split("\t+", $row, 2);
         $row[1] = mb_split(",[ \t]*", $row[1]);
         array_push($format_list, $row);
     }
