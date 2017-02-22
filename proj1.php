@@ -1,19 +1,15 @@
 <?php header("Content-type: text/plain; charset=utf-8");
 
-$ipp_regex = "(100|%d%d|%d)%%";
-
 $br = false;    
-$format = NULL;
-$input = STDIN;
-$output = STDOUT;
+$format_path = NULL;
+$input_path = "php://stdin";
+$output_path = "php://stdout";
 
 function processArguments() {
     global $argc, $argv;
-    global $br, $format, $input, $output; 
+    global $br, $format_path, $input_path, $output_path; 
 
     $arguments = getopt("", array("help::","br::","format::","input::","output::"));
-    
-    //var_dump($arguments);
 
     //Unknown, damaged or recurrent switch
     if (($num_of_args = count($arguments)) != $argc - 1) {
@@ -34,38 +30,25 @@ function processArguments() {
 
     //<br> flag
     if (array_key_exists("br", $arguments)) {
-        if ($arguments["br"] == false) {
+        if ($arguments["br"] == false)
             $br = true;
-        } else {
+        else {
             fwrite(STDERR, "Argument error!\n");
             exit(1);
         }
     }
 
     //Format file
-    if (array_key_exists("format", $arguments)) {
-        if (is_file($arguments["format"])) {
-            $format = fopen($arguments["format"], "r");
-        }
-    }
-
+    if (array_key_exists("format", $arguments))
+        $format_path = $arguments["format"];
+    
     //Input file
-    if (array_key_exists("input", $arguments)) {
-        if (is_file($arguments["input"])) {
-            $input = fopen($arguments["input"], "r");
-        } else {
-            fwrite(STDERR, "Invalid input file!\n");
-            exit(2);
-        }
-    }
-
+    if (array_key_exists("input", $arguments)) 
+        $input_path = $arguments["input"];
+    
     //Output file
-    if (array_key_exists("output", $arguments)) {
-        if ($arguments["output"] == false || $output = fopen($arguments["output"], "w") == false) {
-            fwrite(STDERR, "Invalid output file!\n");
-            exit(3);
-        }
-    }
+    if (array_key_exists("output", $arguments))
+        $output_path = $arguments["output"];
 }
 
 function regexConvert($ipp_regex) {
@@ -123,17 +106,60 @@ function regexConvert($ipp_regex) {
     return $perl_regex;
 }
 
-function parseFormatFile($format_file) {
+function parseFormatFile() {
+    global $format_path;
     $format_list = array();
+
+    if (is_file($format_path) == false)
+        return $format_list;
+    
+    $format_file = fopen($format_path, "r");
     while ($row = fgets($format_file)) {
-        $row = mb_substr ($row, 0, -1);
+        $row = mb_ereg_replace ("\n$", "", $row);
         $row = mb_split("\t+", $row);
         $row[1] = mb_split(",[ \t]*", $row[1]);
+        //
+        for ($i = 0; $i < count($row[1]); $i++) {
+            if ($row[1][$i] == "bold") {
+                $row[1][$i] = "<b>\\1</b>";    
+            } else if ($row[1][$i] == "italic") {
+                $row[1][$i] = "<i>\\1</i>"; 
+            } else if ($row[1][$i] == "underline") {
+                $row[1][$i] = "<u>\\1</u>"; 
+            } else if ($row[1][$i] == "teletype") {
+                $row[1][$i] = "<tt>\\1</tt>"; 
+            } else if (1/*size*/) {
+
+            } else if(1/*color*/) {
+
+            } else {
+                fwrite(STDERR, "Invalid format of input file!\n");
+                exit(4);
+            }
+        }
         array_push($format_list, $row);
     }
+    
+    fclose($format_file);
+    var_dump($format_list);
     return $format_list;
 }
+
+function highlightFile($format_list) {
+    global $br, $input_path, $output_path;
+    
+    if ($content = file_get_contents($input_path) == false) {
+        fwrite(STDERR, "Invalid input file!\n");
+        exit(2);
+    }
+    
+    //...
+    
+    return $content;
+}
+
+
 processArguments();
-var_dump(parseFormatFile($format));
-//print(regexConvert($ipp_regex));
+print(highlightFile($input_path, parseFormatFile($format_path)));
+
 ?>
