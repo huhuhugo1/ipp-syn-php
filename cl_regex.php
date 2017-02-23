@@ -6,7 +6,7 @@ class Regex {
         return $this->regex;
     }
 
-    function ippConvert($string) {
+    function __construct($ipp_regex) {
         $perl_regex = "";
         $negation = "";
 
@@ -27,7 +27,7 @@ class Regex {
             else if ($char === "%") {
                 $i++;
                 switch ($char = mb_substr($ipp_regex, $i, 1, "UTF-8")) {
-                    case "s": $perl_regex .= "[\\t\\n\\r\\f\\v]"; break;
+                    case "s": $perl_regex .= "[ \\t\\n\\r\\f\\v]"; break;
                     case "a": $perl_regex .= "."; break;
                     case "d": $perl_regex .= "[0-9]"; break;
                     case "l": $perl_regex .= "[a-z]"; break;

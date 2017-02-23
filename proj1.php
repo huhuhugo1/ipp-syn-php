@@ -1,5 +1,9 @@
 <?php header("Content-type: text/plain; charset=utf-8");
 
+include('cl_document.php');
+include('cl_formatlist.php');
+include('cl_regex.php');
+
 $br = false;    
 $format_path = NULL;
 $input_path = "php://stdin";
@@ -51,76 +55,33 @@ function processArguments() {
         $output_path = $arguments["output"];
 }
 
+processArguments();
 
-
-function highlightFile() {
-    global $br, $input_path, $output_path;
-    
-    $content = file_get_contents($input_path);
-    $format_list = parseFormatFile();
-
-    if ($content == false) {
-        fwrite(STDERR, "Invalid input file!\n");
-        exit(2);
-    }
-
-    $table = new Table;
-
-    //find all regex in file -- 1st level
-    foreach ($format_list as $regex_row) 
-        $table->addRegexMatchPositions($content, $regex_row[0]);
-    
-    //apply regex -- 2nd level
-    foreach ($format_list as $regex_row) {
-        $opening = "";
-        $closing = ""; 
-        foreach ($regex_row[1] as $format_cmd) {
-            if ($format_cmd == "bold") {
-                $opening .= "<b>";
-                $closing = "</b>" . $closing; 
-            } else if ($format_cmd == "italic") {
-                $opening .= "<i>";
-                $closing = "</i>" . $closing;  
-            } else if ($format_cmd == "underline") {
-                $opening .= "<u>";
-                $closing = "</u>" . $closing; 
-            } else if ($format_cmd == "teletype") {
-                $opening .= "<tt>";
-                $closing = "</tt>" . $closing;  
-            } else if (mb_ereg_match ("color:[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F]" , $format_cmd)) {
-                ;
-            } else if (mb_ereg_match ("size:[0-7]" , $format_cmd)) {
-                ;
-            } else {
-                fwrite(STDERR, "Invalid format of input file!\n");
-                exit(4);
-            }
-        }
-
-        $cords = $table->getRegexMatchPositions($regex_row[0]);
-        for ($i = 0; $i < count($cords); $i++) {
-            $cords = $table->getRegexMatchPositions($regex_row[0]);
-            $content = insertSubstring($content, $opening, $cords[$i][0]);
-            $table->update($cords[$i][0], strlen($opening));
-            
-            
-            $cords = $table->getRegexMatchPositions($regex_row[0]);
-            
-            
-            $content = insertSubstring($content, $closing, $cords[$i][1]);
-            $table->update($cords[$i][1], strlen($closing));
-        }
-    }
-
-    return $content;
+$format_list = new FormatList;
+if ($format_list->initFromFile($format_path) === false) {
+    fwrite(STDERR, "Invalid format of formating file!\n");
+    exit(4);
 }
 
+$document = new Document;
+if ($document->initFromFile($input_path) === false) {
+    fwrite(STDERR, "Invalid input file!\n");
+    exit(2);
+}
 
-processArguments();
-print(highlightFile(parseFormatFile()));
+foreach ($format_list->get() as $regex_line) {
+    $regex = new Regex($regex_line[0]);
+    print($regex->get() . "\n");
+    $document->findRegexMatchPositions($regex->get());
+}
 
+foreach ($format_list->get() as $regex_line) {
+    $document->highlightDocument($regex_line[0],"<a>", "</a>");
+}
 
-
-//var_dump(getRegexMatchPosition("ahoj, ako sa máš?", "a"));
+if (file_put_contents($output_path, $document->get()) === false){
+    fwrite(STDERR, "Output file error!\n");
+    exit(3);
+}
 
 ?>
