@@ -5,32 +5,6 @@ $format_path = NULL;
 $input_path = "php://stdin";
 $output_path = "php://stdout";
 
-class Table {
-    public $table;
-    
-    function addRegexMatchPositions($string, $regex) {
-        mb_regex_encoding('UTF-8');
-        mb_ereg_search_init($string);
-        $output = array();
-        while ($arr = mb_ereg_search_pos($regex)) {
-            $output[] = array($arr[0], $arr[0]+$arr[1]);
-        }
-        $this->table[$regex] = $output;
-    }
-
-    function update($idx, $len) {
-        foreach ($this->table as &$regex)
-            foreach($regex as &$cors)
-                foreach($cors as &$cor)
-                    if ($cor >= $idx)
-                        $cor += $len;
-    }
-
-    function getRegexMatchPositions($regex) {
-        return $this->table[$regex];
-    }
-}
-
 function processArguments() {
     global $argc, $argv;
     global $br, $format_path, $input_path, $output_path; 
@@ -77,80 +51,7 @@ function processArguments() {
         $output_path = $arguments["output"];
 }
 
-function regexConvert($ipp_regex) {
-    $perl_regex = "";
-    $negation = "";
 
-    $PCRE_metachars = array("^", "$", "?", "[", "]", "{", "}", "\\", "-");
-    $common_metachars = array("|", "*", "+", "(", ")");
-
-    $regex_length = mb_strlen($ipp_regex, "UTF-8");
-
-    for ($i = 0; $i < $regex_length; $i++) {
-        $char = mb_substr($ipp_regex, $i, 1, "UTF-8");
-        
-        if (in_array($char, $PCRE_metachars))
-            $perl_regex .= "\\" . $char;
-        else if (in_array($char, $common_metachars))
-            $perl_regex .= $char;
-        else if ($char === ".")
-            ; //nothing, concatenation operator
-        else if ($char === "%") {
-            $i++;
-            switch ($char = mb_substr($ipp_regex, $i, 1, "UTF-8")) {
-                case "s": $perl_regex .= "[\\t\\n\\r\\f\\v]"; break;
-                case "a": $perl_regex .= "."; break;
-                case "d": $perl_regex .= "[0-9]"; break;
-                case "l": $perl_regex .= "[a-z]"; break;
-                case "L": $perl_regex .= "[A-Z]"; break;
-                case "w": $perl_regex .= "[a-zA-Z]"; break;
-                case "W": $perl_regex .= "[0-9a-zA-Z]"; break;
-                case "t": $perl_regex .= "\\t"; break;
-                case "n": $perl_regex .= "\\n"; break;
-                case ".": $perl_regex .= "\\."; break;
-                case "|": $perl_regex .= "\\|"; break;
-                case "!": $perl_regex .= "!"; break;
-                case "*": $perl_regex .= "\\*"; break;
-                case "+": $perl_regex .= " \\+"; break;
-                case "(": $perl_regex .= "\\("; break;
-                case ")": $perl_regex .= "\\)"; break;
-                case "%": $perl_regex .= "%"; break;
-            }
-        } else if ($char === "!") {
-            ;
-        } else if (ord($char) >= 32) 
-            $perl_regex .= $char;
-        else {
-            fwrite(STDERR, "Invalid regex format!\n");
-            exit(4);
-        }
-    }
-
-    return $perl_regex;
-}
-
-function parseFormatFile() {
-    global $format_path;
-    $format_list = array();
-
-    if (is_file($format_path) == false)
-        return $format_list;
-    
-    $format_file = fopen($format_path, "r");
-    while ($row = fgets($format_file)) {
-        $row = mb_ereg_replace ("\n$", "", $row);
-        $row = mb_split("\t+", $row, 2);
-        $row[1] = mb_split(",[ \t]*", $row[1]);
-        array_push($format_list, $row);
-    }
-    
-    fclose($format_file);
-    return $format_list;
-}
-
-function insertSubstring ($string, $substring, $offset) {
-    return mb_substr($string, 0, $offset) . $substring. mb_substr($string, $offset, NULL);
-}
 
 function highlightFile() {
     global $br, $input_path, $output_path;
