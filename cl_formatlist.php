@@ -6,8 +6,8 @@ class FormatList {
          $this->format_list = array();
     }
 
-    public function get() {
-         return $this->format_list;
+    public function gets() {
+        return array_keys($this->format_list);
     }
 
     public function initFromFile($format_path) {
@@ -21,8 +21,7 @@ class FormatList {
             if (mb_ereg_match("^[^\t]+\t+(bold|italic|underline|teletype|color:[0-9a-fA-F]{6}|size:[0-7])(,[ \t]*(bold|italic|underline|teletype|color:[0-9a-fA-F]{6}|size:[0-7]))*\n?$", $row)) {
                 $row = mb_ereg_replace ("\n$", "", $row);
                 $row = mb_split("\t+", $row, 2);
-                $row[1] = mb_split(",[ \t]*", $row[1]);
-                array_push($this->format_list, $row);
+                $this->format_list[$row[0]] = mb_split(",[ \t]*", $row[1]); //TODO aktualne sa obsah prepise poslednym riadom s danym regexom, treba overit zadanie
             } else {
                 fclose($format_file);
                 return false;
@@ -30,7 +29,42 @@ class FormatList {
         }
         fclose($format_file);
 
-    return $this->format_list;
+        return $this->format_list;
+    }
+
+    public function getTags($ipp_regex) {
+        $opening = "";
+        $closing = "";
+        $font = "";
+
+        foreach ($this->format_list[$ipp_regex] as $format_cmd) {
+            if ($format_cmd == "bold") {
+                $opening .= "<b>";
+                $closing = "</b>" . $closing; 
+            } else if ($format_cmd == "italic") {
+                $opening .= "<i>";
+                $closing = "</i>" . $closing;  
+            } else if ($format_cmd == "underline") {
+                $opening .= "<u>";
+                $closing = "</u>" . $closing; 
+            } else if ($format_cmd == "teletype") {
+                $opening .= "<tt>";
+                $closing = "</tt>" . $closing;  
+            } else if (mb_ereg_match ("color:[0-9a-fA-F]{6}" , $format_cmd)) {
+                $font .= "color=#" . mb_substr($format_cmd, 6);
+            } else if (mb_ereg_match ("size:[0-7]" , $format_cmd)) {
+                $font .= "size=" . mb_substr($format_cmd, 5);
+            } else {//TODO mozmo zbytocne, viz riadok 21
+                fwrite(STDERR, "POZRI TODO Invalid format of input file!\n");
+                exit(4);
+            }
+
+            if ($font != "") {
+                $opening .= "<font " . $font . ">";
+                $closing = "</font>" . $closing;
+            }
+        }
+        return array($opening, $closing);
     }
 }
 ?>

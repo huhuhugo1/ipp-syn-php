@@ -69,16 +69,16 @@ if ($document->initFromFile($input_path) === false) {
     exit(2);
 }
 
-foreach ($format_list->get() as $regex_line) {
-    $regex = new Regex($regex_line[0]);
+foreach ($format_list->gets() as $ipp_regex) {
+    $regex = new Regex($ipp_regex);
     if ($document->findRegexMatchPositions($regex) === false) {
         fwrite(STDERR, "Invalid regex!\n");
         exit(4);
     }
 }
 
-foreach ($format_list->get() as $regex_line) {
-    $document->highlightDocument($regex_line[0],"<a>", "</a>");
+foreach ($format_list->gets() as $ipp_regex) {
+    $document->highlightDocument($ipp_regex, $format_list->getTags($ipp_regex));
 }
 
 if (file_put_contents($output_path, $document->get()) === false){

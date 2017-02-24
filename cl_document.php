@@ -27,13 +27,13 @@ class document {
         return $error;
     }
 
-    function highlightDocument($regex, $opening, $closing) {
+    function highlightDocument($regex, $Tags) {
         if (array_key_exists ($regex, $this->table))
             foreach ($this->table[$regex] as &$coordinates){
-                $this->insertSubstring($opening, $coordinates[0]);
-                $this->updateRegexMatchPositions($coordinates[0], strlen($opening));
-                $this->insertSubstring($closing, $coordinates[1]);
-                $this->updateRegexMatchPositions($coordinates[1], strlen($closing));
+                $this->insertSubstring($Tags[0], $coordinates[0]);
+                $this->updateRegexMatchPositions($coordinates[0], strlen($Tags[0]));
+                $this->insertSubstring($Tags[1], $coordinates[1]);
+                $this->updateRegexMatchPositions($coordinates[1], strlen($Tags[1]));
             }
     }
 
