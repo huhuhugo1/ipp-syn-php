@@ -18,12 +18,13 @@ class document {
     }
 
     function findRegexMatchPositions($regex) {
-        mb_regex_encoding('UTF-8');
-        mb_ereg_search_init($this->document);
-        
-        while ($arr = mb_ereg_search_pos($regex)) {
-            $this->table[$regex][] = array($arr[0], $arr[0]+$arr[1]);
+        $end = 0;
+        while ($error = @preg_match("/(" . $regex->pcre_regex . ")/u", $this->document, $arr, PREG_OFFSET_CAPTURE, $end)) {
+            $arr = array_reverse($arr[0]);
+            $end = $arr[0]+strlen($arr[1]);
+            $this->table[$regex->ipp_regex][] = array($arr[0], $end);   
         }
+        return $error;
     }
 
     function highlightDocument($regex, $opening, $closing) {

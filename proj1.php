@@ -5,8 +5,8 @@ include('cl_formatlist.php');
 include('cl_regex.php');
 
 $br = false;    
-$format_path = NULL;
-$input_path = "php://stdin";
+$format_path = "multiple.fmt";//NULL;
+$input_path = "percenta.txt";//"php://stdin";
 $output_path = "php://stdout";
 
 function processArguments() {
@@ -71,8 +71,10 @@ if ($document->initFromFile($input_path) === false) {
 
 foreach ($format_list->get() as $regex_line) {
     $regex = new Regex($regex_line[0]);
-    print($regex->get() . "\n");
-    $document->findRegexMatchPositions($regex->get());
+    if ($document->findRegexMatchPositions($regex) === false) {
+        fwrite(STDERR, "Invalid regex!\n");
+        exit(4);
+    }
 }
 
 foreach ($format_list->get() as $regex_line) {

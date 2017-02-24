@@ -1,13 +1,12 @@
 <?php 
 class Regex {
-    public $regex = "";
-
-    function get() {
-        return $this->regex;
-    }
+    public $ipp_regex;
+    public $pcre_regex;
 
     function __construct($ipp_regex) {
-        $perl_regex = "";
+        $this->ipp_regex = $ipp_regex;
+        $this->pcre_regex = "";
+
         $negation = "";
 
         $PCRE_metachars = array("^", "$", "?", "[", "]", "{", "}", "\\", "-");
@@ -19,42 +18,41 @@ class Regex {
             $char = mb_substr($ipp_regex, $i, 1, "UTF-8");
             
             if (in_array($char, $PCRE_metachars))
-                $perl_regex .= "\\" . $char;
+                $this->pcre_regex .= "\\" . $char;
             else if (in_array($char, $common_metachars))
-                $perl_regex .= $char;
+                $this->pcre_regex .= $char;
             else if ($char === ".")
                 ; //nothing, concatenation operator
             else if ($char === "%") {
                 $i++;
                 switch ($char = mb_substr($ipp_regex, $i, 1, "UTF-8")) {
-                    case "s": $perl_regex .= "[ \\t\\n\\r\\f\\v]"; break;
-                    case "a": $perl_regex .= "."; break;
-                    case "d": $perl_regex .= "[0-9]"; break;
-                    case "l": $perl_regex .= "[a-z]"; break;
-                    case "L": $perl_regex .= "[A-Z]"; break;
-                    case "w": $perl_regex .= "[a-zA-Z]"; break;
-                    case "W": $perl_regex .= "[0-9a-zA-Z]"; break;
-                    case "t": $perl_regex .= "\\t"; break;
-                    case "n": $perl_regex .= "\\n"; break;
-                    case ".": $perl_regex .= "\\."; break;
-                    case "|": $perl_regex .= "\\|"; break;
-                    case "!": $perl_regex .= "!"; break;
-                    case "*": $perl_regex .= "\\*"; break;
-                    case "+": $perl_regex .= " \\+"; break;
-                    case "(": $perl_regex .= "\\("; break;
-                    case ")": $perl_regex .= "\\)"; break;
-                    case "%": $perl_regex .= "%"; break;
+                    case "s": $this->pcre_regex .= "[ \\t\\n\\r\\f\\v]"; break;
+                    case "a": $this->pcre_regex .= "."; break;
+                    case "d": $this->pcre_regex .= "[0-9]"; break;
+                    case "l": $this->pcre_regex .= "[a-z]"; break;
+                    case "L": $this->pcre_regex .= "[A-Z]"; break;
+                    case "w": $this->pcre_regex .= "[a-zA-Z]"; break;
+                    case "W": $this->pcre_regex .= "[0-9a-zA-Z]"; break;
+                    case "t": $this->pcre_regex .= "\\t"; break;
+                    case "n": $this->pcre_regex .= "\\n"; break;
+                    case ".": $this->pcre_regex .= "\\."; break;
+                    case "|": $this->pcre_regex .= "\\|"; break;
+                    case "!": $this->pcre_regex .= "!"; break;
+                    case "*": $this->pcre_regex .= "\\*"; break;
+                    case "+": $this->pcre_regex .= " \\+"; break;
+                    case "(": $this->pcre_regex .= "\\("; break;
+                    case ")": $this->pcre_regex .= "\\)"; break;
+                    case "%": $this->pcre_regex .= "%"; break;
                 }
             } else if ($char === "!") {
                 ;
             } else if (ord($char) >= 32) 
-                $perl_regex .= $char;
+                $this->pcre_regex .= $char;
             else {
-                $this->regex = "";
+                $this->pcre_regex = "";
                 return false;
             }
         }
-        $this->regex = $perl_regex;
         return true;
     }
 }
