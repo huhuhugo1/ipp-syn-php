@@ -9,7 +9,7 @@ class document {
         $this->table = array();
     }
 
-    function get() {
+    function __toString() {
         return $this->document;
     }
 

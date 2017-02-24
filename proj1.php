@@ -81,7 +81,7 @@ foreach ($format_list->gets() as $ipp_regex) {
     $document->highlightDocument($ipp_regex, $format_list->getTags($ipp_regex));
 }
 
-if (file_put_contents($output_path, $document->get()) === false){
+if (file_put_contents($output_path, $document) === false){
     fwrite(STDERR, "Output file error!\n");
     exit(3);
 }
