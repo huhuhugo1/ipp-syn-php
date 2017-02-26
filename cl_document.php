@@ -21,6 +21,12 @@ class document {
         $end = 0;
         while ($error = @preg_match("/(" . $regex->pcre_regex . ")/u", $this->document, $arr, PREG_OFFSET_CAPTURE, $end)) {
             $arr = array_reverse($arr[0]);
+            if (strlen($arr[1]) === 0) {
+                if ($end === strlen($this->document))
+                    return 0;
+                $end++;
+                continue;
+            }
             $end = $arr[0]+strlen($arr[1]);
             $this->table[$regex->ipp_regex][] = array($arr[0], $end);   
         }

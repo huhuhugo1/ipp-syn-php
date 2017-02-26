@@ -5,8 +5,8 @@ include('cl_formatlist.php');
 include('cl_regex.php');
 
 $br = false;    
-$format_path = "multiple.fmt";//NULL;
-$input_path = "percenta.txt";//"php://stdin";
+$format_path = "stash/multiple.fmt";//NULL;
+$input_path = "stash/percenta.txt";//"php://stdin";
 $output_path = "php://stdout";
 
 function processArguments() {

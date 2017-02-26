@@ -42,17 +42,18 @@ class Regex {
                     case "n": $this->pcre_regex .= "[".$negation."\\n]"; break;
                     case ".": $this->pcre_regex .= "[".$negation."\\.]"; break;
                     case "|": $this->pcre_regex .= "[".$negation."\\|]"; break;
-                    case "!": $this->pcre_regex .= "[".$negation."!]"; break;
+                    case "!": $this->pcre_regex .= "[".$negation."\\!]"; break;
                     case "*": $this->pcre_regex .= "[".$negation."\\*]"; break;
                     case "+": $this->pcre_regex .= "[".$negation."\\+]"; break;
                     case "(": $this->pcre_regex .= "[".$negation."\\(]"; break;
                     case ")": $this->pcre_regex .= "[".$negation."\\)]"; break;
-                    case "%": $this->pcre_regex .= "[".$negation."%]"; break;
+                    case "%": $this->pcre_regex .= "[".$negation."\\%]"; break;
+                    default:  $this->pcre_regex .= "[".$negation."\\".$char."]"; break;
                 }
             
             else if (ord($char) >= 32) 
                 $this->pcre_regex .= "[".$negation.$char."]";
-            
+
             else {
                 $this->pcre_regex = "";
                 return false;
