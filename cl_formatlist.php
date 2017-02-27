@@ -18,7 +18,7 @@ class FormatList {
         while ($row = fgets($format_file)) {
             if ($row === "\n")
                 continue;
-            if (mb_ereg_match("^[^\t]+\t+(bold|italic|underline|teletype|color:[0-9a-fA-F]{6}|size:[0-7])(,[ \t]*(bold|italic|underline|teletype|color:[0-9a-fA-F]{6}|size:[0-7]))*\n?$", $row)) {
+            if (mb_ereg_match("^[^\t]+\t+(bold|italic|underline|teletype|color:[0-9a-fA-F]{6}|size:[1-7])(,[ \t]*(bold|italic|underline|teletype|color:[0-9a-fA-F]{6}|size:[0-7]))*\n?$", $row)) {
                 $row = mb_ereg_replace ("\n$", "", $row);
                 $row = mb_split("\t+", $row, 2);
                 $this->format_list[$row[0]] = mb_split(",[ \t]*", $row[1]); //TODO aktualne sa obsah prepise poslednym riadom s danym regexom, treba overit zadanie

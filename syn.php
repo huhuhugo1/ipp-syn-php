@@ -71,7 +71,7 @@ if ($document->initFromFile($input_path) === false) {
 
 foreach ($format_list->gets() as $ipp_regex) {
     $regex = new Regex($ipp_regex);
-    if ($document->findRegexMatchPositions($regex) === false) {
+    if ($regex->convert() === false || $document->findRegexMatchPositions($regex) === false) {
         fwrite(STDERR, "Invalid regex!\n");
         exit(4);
     }

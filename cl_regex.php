@@ -6,23 +6,33 @@ class Regex {
     function __construct($ipp_regex) {
         $this->ipp_regex = $ipp_regex;
         $this->pcre_regex = "";
+    }
 
+    function convert() {          
         $PCRE_metachars = array("^", "$", "?", "[", "]", "{", "}", "\\", "-", "/"); // "/" - slash needs to be escaped
         $common_metachars = array("|", "*", "+", "(", ")");
 
         $negation = "";
+        $dot = false;
 
-        for ($i = 0; $i < mb_strlen($ipp_regex, "UTF-8"); $i++) {
-            $char = mb_substr($ipp_regex, $i, 1, "UTF-8");
+        for ($i = 0; $i < mb_strlen($this->ipp_regex, "UTF-8"); $i++) {
+            $char = mb_substr($this->ipp_regex, $i, 1, "UTF-8");
             
             if (in_array($char, $PCRE_metachars))
                 $this->pcre_regex .= "[".$negation."\\".$char."]";
 
-            else if (in_array($char, $common_metachars))
+            else if (in_array($char, $common_metachars)) {
+                if ($negation === "^")
+                    return false;
                 $this->pcre_regex .= $char;
+            }
             
-            else if ($char === ".")
-                ; //nothing, concatenation operator
+            else if ($char === ".") {
+                if ($dot || $i === 0 || $i === mb_strlen($this->ipp_regex, "UTF-8") - 1)
+                    return false;
+                $dot = true;
+                continue;
+            }
             
             else if ($char === "!") {
                 $negation = "^";
@@ -30,7 +40,7 @@ class Regex {
             }
             
             else if ($char === "%")
-                switch ($char = mb_substr($ipp_regex, ++$i, 1, "UTF-8")) {
+                switch ($char = mb_substr($this->ipp_regex, ++$i, 1, "UTF-8")) {
                     case "s": $this->pcre_regex .= "[".$negation." \\t\\n\\r\\f\\v]"; break;
                     case "a": $this->pcre_regex .= "[".$negation."\\s\\S]"; break;
                     case "d": $this->pcre_regex .= "[".$negation."0-9]"; break;
@@ -60,7 +70,11 @@ class Regex {
             }
 
             $negation = "";
+            $dot = false;
         }
+
+        if(preg_match("/".$this->pcre_regex."/u", null) === false)
+            return false;
         return true;
     }
 }
