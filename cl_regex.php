@@ -7,7 +7,7 @@ class Regex {
         $this->ipp_regex = $ipp_regex;
         $this->pcre_regex = "";
 
-        $PCRE_metachars = array("^", "$", "?", "[", "]", "{", "}", "\\", "-");
+        $PCRE_metachars = array("^", "$", "?", "[", "]", "{", "}", "\\", "-", "/"); // "/" - slash needs to be escaped
         $common_metachars = array("|", "*", "+", "(", ")");
 
         $negation = "";
@@ -48,7 +48,7 @@ class Regex {
                     case "(": $this->pcre_regex .= "[".$negation."\\(]"; break;
                     case ")": $this->pcre_regex .= "[".$negation."\\)]"; break;
                     case "%": $this->pcre_regex .= "[".$negation."\\%]"; break;
-                    default:  $this->pcre_regex .= "[".$negation."\\".$char."]"; break;
+                    default: return false; // %<nespecialni_symbol> je neplatny regularni vyraz
                 }
             
             else if (ord($char) >= 32) 

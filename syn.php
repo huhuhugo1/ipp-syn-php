@@ -5,8 +5,8 @@ include('cl_formatlist.php');
 include('cl_regex.php');
 
 $br = false;    
-$format_path = "stash/multiple.fmt";//NULL;
-$input_path = "stash/percenta.txt";//"php://stdin";
+$format_path = NULL;
+$input_path = "php://stdin";
 $output_path = "php://stdout";
 
 function processArguments() {
@@ -80,6 +80,8 @@ foreach ($format_list->gets() as $ipp_regex) {
 foreach ($format_list->gets() as $ipp_regex) {
     $document->highlightDocument($ipp_regex, $format_list->getTags($ipp_regex));
 }
+
+$document->enableBr($br);
 
 if (file_put_contents($output_path, $document) === false){
     fwrite(STDERR, "Output file error!\n");

@@ -51,19 +51,17 @@ class FormatList {
                 $opening .= "<tt>";
                 $closing = "</tt>" . $closing;  
             } else if (mb_ereg_match ("color:[0-9a-fA-F]{6}" , $format_cmd)) {
-                $font .= "color=#" . mb_substr($format_cmd, 6);
+                $opening .= "<font color=#" . mb_substr($format_cmd, 6) . ">";
+                $closing = "</font>" . $closing;
             } else if (mb_ereg_match ("size:[0-7]" , $format_cmd)) {
-                $font .= "size=" . mb_substr($format_cmd, 5);
+                $opening .= "<font size=" . mb_substr($format_cmd, 5) .">";
+                $closing = "</font>" . $closing;
             } else {//TODO mozmo zbytocne, viz riadok 21
                 fwrite(STDERR, "POZRI TODO Invalid format of input file!\n");
                 exit(4);
             }
-
-            if ($font != "") {
-                $opening .= "<font " . $font . ">";
-                $closing = "</font>" . $closing;
-            }
         }
+        
         return array($opening, $closing);
     }
 }
