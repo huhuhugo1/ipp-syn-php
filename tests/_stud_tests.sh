@@ -330,4 +330,7 @@ for i in `ls ./moj-out/ | grep -e '.*\.[^e]'`
 	done
 echo "Nepreslo: $COUNT testov";
 
-return $COUNT;
+ls
+find moj-out/
+
+exit $COUNT
