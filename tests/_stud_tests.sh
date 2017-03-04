@@ -52,8 +52,8 @@
 #
 # =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
-TASK=syn
-INTERPRETER="php -d open_basedir=\"\""
+TASK="../syn"
+INTERPRETER="php"
 EXTENSION=php
 #INTERPRETER=python3
 #EXTENSION=py
