@@ -1,0 +1,2 @@
+PHP Warning:  preg_match(): Compilation failed: missing ) at offset 10 in /mnt/d/OneDrive/git/ipp-syn-php/cl_regex.php on line 76
+Invalid regex!

@@ -1,0 +1,7 @@
+if <b>a</b>>b then
+	p = 89%
+else
+	p = 100%
+end if
+
+string s = "string ev<b>a</b>lu<b>a</b>tion test"
