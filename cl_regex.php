@@ -82,7 +82,7 @@ class Regex {
         }
 
         $this->pcre_regex = implode($regex_array);
-        if(preg_match("/".$this->pcre_regex."/u", null) === false)
+        if(@preg_match("/".$this->pcre_regex."/u", null) === false)
             return false;
         
         return true;
