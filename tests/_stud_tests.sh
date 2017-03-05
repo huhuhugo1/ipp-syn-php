@@ -321,12 +321,11 @@ echo -n $? > ${LOG_PATH}test62.!!!
 for i in `ls ./moj-out/ | grep -e '.*\.[^e]'`
 	do
 		echo "Test: $i"
-		printf "\n"
 		colordiff ./moj-out/"$i" ./ref-out/"$i"
 		if [ $? -ne 0 ]; then
 			((COUNT++))
 		fi	
-		printf "\n**********************************************************************\n"
+		printf "**********************************************************************\n"
 	done
 echo "Nepreslo: $COUNT testov";
 
