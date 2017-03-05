@@ -2,4 +2,4 @@ language: php
 php:
   - '5.6'
 before_script: cd tests/
-script: bash _stud_tests.sh; pwd; ls; find .;
+script: bash _stud_tests.sh
