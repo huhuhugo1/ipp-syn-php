@@ -11,7 +11,7 @@ class FormatList {
     }
 
     public function initFromFile($format_path) {
-        if (is_file($format_path) === false || ($format_file = fopen($format_path, "r")) === false) {
+        if (is_file($format_path) === false || ($format_file = @fopen($format_path, "r")) === false) {
             return $this->format_list;
         }
 

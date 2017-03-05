@@ -83,7 +83,7 @@ foreach ($format_list->gets() as $ipp_regex) {
 
 $document->enableBr($br);
 
-if (file_put_contents($output_path, $document) === false){
+if (@file_put_contents($output_path, $document) === false){
     fwrite(STDERR, "Output file error!\n");
     exit(3);
 }

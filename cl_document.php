@@ -13,7 +13,7 @@ class document {
     }
 
     function initFromFile($input_path) {
-        return $this->document = file_get_contents($input_path);
+        return $this->document = @file_get_contents($input_path);
     }
 
     function findRegexMatchPositions($regex) {
