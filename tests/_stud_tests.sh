@@ -322,7 +322,7 @@ for i in `ls ./moj-out/ | grep -e '.*\.[^e]'`
 	do
 		echo "Test: $i"
 		printf "\n"
-		diff -a ./moj-out/"$i" ./ref-out/"$i"
+		colordiff ./moj-out/"$i" ./ref-out/"$i"
 		if [ $? -ne 0 ]; then
 			((COUNT++))
 		fi	
