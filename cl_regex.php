@@ -79,7 +79,7 @@ class Regex {
         $regex_array[] = "";
 
         for ($i = 0; $i < count($regex_array)-1; $i++) {
-            if ($is_error[$regex_array[$i]][$regex_array[$i+1]] === true) {
+            if (@$is_error[$regex_array[$i]][$regex_array[$i+1]] === true) {
                 return false;
             }
             if ($regex_array[$i] === ".")
