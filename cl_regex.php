@@ -36,11 +36,11 @@ class Regex {
                 switch ($char = mb_substr($this->ipp_regex, ++$i, 1, "UTF-8")) {
                     case "s": $element .= "[".$negation." \\t\\n\\r\\f\\v]"; break;
                     case "a": $element .= "[".$negation."\\s\\S]"; break;
-                    case "d": $element .= "[".$negation."[:digit:]]"; break;
-                    case "l": $element .= "[".$negation."[:lower:]]"; break;
-                    case "L": $element .= "[".$negation."[:upper:]]"; break;
-                    case "w": $element .= "[".$negation."[:alpha:]]"; break;
-                    case "W": $element .= "[".$negation."[:alnum:]]"; break;
+                    case "d": $element .= "[".$negation."0-9]"; break;
+                    case "l": $element .= "[".$negation."a-z]"; break;
+                    case "L": $element .= "[".$negation."A-Z]"; break;
+                    case "w": $element .= "[".$negation."a-zA-Z]"; break;
+                    case "W": $element .= "[".$negation."a-zA-Z0-9]"; break;
                     case "t": $element .= "[".$negation."\\t]"; break;
                     case "n": $element .= "[".$negation."\\n]"; break;
                     case ".": $element .= "[".$negation."\\.]"; break;
