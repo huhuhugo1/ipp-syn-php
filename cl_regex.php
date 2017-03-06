@@ -30,14 +30,16 @@ class Regex {
                 $element = "[".$negation."\\".$char."]";
 
             else if (in_array($char, $common_metachars)) {
-                if ($negation === "^") return false;
+                if ($negation === "^")
+                    return false;
                 $element = $char;
             }
             
             else if ($char === "!") {
                 if ($negation === "^") 
                     return false;
-                $negation = "^"; continue;
+                $negation = "^";
+                continue;
             }
             
             else if ($char === "%")
