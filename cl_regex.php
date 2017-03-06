@@ -12,6 +12,14 @@ class Regex {
         $PCRE_metachars = array("^", "$", "?", "[", "]", "{", "}", "\\", "-", "/"); // "/" - slash needs to be escaped
         $common_metachars = array(".", "|", "*", "+", "(", ")");
 
+        $is_error[""] = array("" => true, "*" => true, "+" => true, "." => true, "|" => true, "(" => false, ")" => true);
+        $is_error["*"] = array("" => false, "*" => true, "+" => true, "." => false, "|" => false, "(" => false, ")" => false);
+        $is_error["+"] = array("" => false, "*" => true, "+" => true, "." => false, "|" => false, "(" => false, ")" => false);
+        $is_error["."] = array("" => true, "*" => true, "+" => true, "." => true, "|" => true, "(" => false, ")" => true);
+        $is_error["|"] = array("" => true, "*" => true, "+" => true, "." => true, "|" => true, "(" => false, ")" => true);
+        $is_error["("] = array("" => true, "*" => true, "+" => true, "." => true, "|" => true, "(" => false, ")" => true);
+        $is_error[")"] = array("" => false, "*" => false, "+" => false, "." => false, "|" => false, "(" => false, ")" => false);
+
         $regex_array = array();
         $element = $negation = "";
 
@@ -19,11 +27,11 @@ class Regex {
             $char = mb_substr($this->ipp_regex, $i, 1, "UTF-8");
             
             if (in_array($char, $PCRE_metachars))
-                $element .= "[".$negation."\\".$char."]";
+                $element = "[".$negation."\\".$char."]";
 
             else if (in_array($char, $common_metachars)) {
                 if ($negation === "^") return false;
-                $element .= $char;
+                $element = $char;
             }
             
             else if ($char === "!") {
@@ -34,28 +42,28 @@ class Regex {
             
             else if ($char === "%")
                 switch ($char = mb_substr($this->ipp_regex, ++$i, 1, "UTF-8")) {
-                    case "s": $element .= "[".$negation." \\t\\n\\r\\f\\v]"; break;
-                    case "a": $element .= "[".$negation."\\s\\S]"; break;
-                    case "d": $element .= "[".$negation."0-9]"; break;
-                    case "l": $element .= "[".$negation."a-z]"; break;
-                    case "L": $element .= "[".$negation."A-Z]"; break;
-                    case "w": $element .= "[".$negation."a-zA-Z]"; break;
-                    case "W": $element .= "[".$negation."a-zA-Z0-9]"; break;
-                    case "t": $element .= "[".$negation."\\t]"; break;
-                    case "n": $element .= "[".$negation."\\n]"; break;
-                    case ".": $element .= "[".$negation."\\.]"; break;
-                    case "|": $element .= "[".$negation."\\|]"; break;
-                    case "!": $element .= "[".$negation."\\!]"; break;
-                    case "*": $element .= "[".$negation."\\*]"; break;
-                    case "+": $element .= "[".$negation."\\+]"; break;
-                    case "(": $element .= "[".$negation."\\(]"; break;
-                    case ")": $element .= "[".$negation."\\)]"; break;
-                    case "%": $element .= "[".$negation."\\%]"; break;
+                    case "s": $element = "[".$negation." \\t\\n\\r\\f\\v]"; break;
+                    case "a": $element = "[".$negation."\\s\\S]"; break;
+                    case "d": $element = "[".$negation."0-9]"; break;
+                    case "l": $element = "[".$negation."a-z]"; break;
+                    case "L": $element = "[".$negation."A-Z]"; break;
+                    case "w": $element = "[".$negation."a-zA-Z]"; break;
+                    case "W": $element = "[".$negation."a-zA-Z0-9]"; break;
+                    case "t": $element = "[".$negation."\\t]"; break;
+                    case "n": $element = "[".$negation."\\n]"; break;
+                    case ".": $element = "[".$negation."\\.]"; break;
+                    case "|": $element = "[".$negation."\\|]"; break;
+                    case "!": $element = "[".$negation."\\!]"; break;
+                    case "*": $element = "[".$negation."\\*]"; break;
+                    case "+": $element = "[".$negation."\\+]"; break;
+                    case "(": $element = "[".$negation."\\(]"; break;
+                    case ")": $element = "[".$negation."\\)]"; break;
+                    case "%": $element = "[".$negation."\\%]"; break;
                     default: return false; // %<nespecialni_symbol> je neplatny regularni vyraz
                 }
             
             else if (ord($char) >= 32) 
-                $element .= "[".$negation.$char."]";
+                $element = "[".$negation.$char."]";
 
             else
                 return false;
@@ -66,19 +74,16 @@ class Regex {
 
         if ($negation === "^")
             return false;
+        
+        array_unshift($regex_array, "");
+        $regex_array[] = "";
 
-        for ($i = 0; $i < count($regex_array); $i++) {
-            switch ($regex_array[$i]) {
-                case ".": 
-                    $regex_array[$i] = "";
-                case "|":
-                    if ($i === 0 || $i === count($regex_array)-1)
-                        return false;  
-                    if ($regex_array[$i-1] == "" || $regex_array[$i-1] == "|")
-                        return false;
-                    break;
+        for ($i = 0; $i < count($regex_array)-1; $i++) {
+            if ($is_error[$regex_array[$i]][$regex_array[$i+1]] === true) {
+                return false;
             }
-
+            if ($regex_array[$i] === ".")
+                $regex_array[$i] = "";
         }
 
         $this->pcre_regex = implode($regex_array);
@@ -88,4 +93,8 @@ class Regex {
         return true;
     }
 }
+
+
+
+
 ?>
