@@ -13,8 +13,8 @@ class Regex {
         $common_metachars = array(".", "|", "*", "+", "(", ")");
 
         $is_error[""] = array("" => true, "*" => true, "+" => true, "." => true, "|" => true, "(" => false, ")" => true);
-        $is_error["*"] = array("" => false, "*" => true, "+" => true, "." => false, "|" => false, "(" => false, ")" => false);
-        $is_error["+"] = array("" => false, "*" => true, "+" => true, "." => false, "|" => false, "(" => false, ")" => false);
+        $is_error["*"] = array("" => false, "*" => false, "+" => false, "." => false, "|" => false, "(" => false, ")" => false);
+        $is_error["+"] = array("" => false, "*" => false, "+" => false, "." => false, "|" => false, "(" => false, ")" => false);
         $is_error["."] = array("" => true, "*" => true, "+" => true, "." => true, "|" => true, "(" => false, ")" => true);
         $is_error["|"] = array("" => true, "*" => true, "+" => true, "." => true, "|" => true, "(" => false, ")" => true);
         $is_error["("] = array("" => true, "*" => true, "+" => true, "." => true, "|" => true, "(" => false, ")" => true);
@@ -86,6 +86,16 @@ class Regex {
             }
             if ($regex_array[$i] === ".")
                 $regex_array[$i] = "";
+
+            else if ($regex_array[$i] === "+")
+                if ($regex_array[$i+1] === "+" || $regex_array[$i+1] === "*")
+                    $regex_array[$i] = "";
+
+            else if ($regex_array[$i] === "*")
+                if ($regex_array[$i+1] === "+" || $regex_array[$i+1] === "*") {
+                    $regex_array[$i] = "";
+                    $regex_array[$i+1] = "*";
+                }
         }
 
         $this->pcre_regex = implode($regex_array);
