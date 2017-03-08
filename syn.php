@@ -24,7 +24,11 @@ function processArguments() {
     //--help argument was entered
     if (array_key_exists("help", $arguments)) {
         if ($argc == 2 &&  $arguments["help"] == false) {
-            print("This is help.\n");
+            printf("• --help\n");
+            printf("• --format=filename určení  formátovacího  souboru.\n");
+            printf("• --input=filename určení vstupního souboru v kódování UTF-8.\n");
+            printf("• --output=filename určení výstupního souboru opět v kódování UTF-8 s naformátovaným vstupním textem.\n");
+            printf("• --br přidá element <br /> na konec každého řádku původního vstupního textu (až po aplikaci formátovacích příkazů).\n");
             exit(0);
         } else {
             fwrite(STDERR, "Argument error!\n");
