@@ -4,14 +4,11 @@ include('cl_document.php');
 include('cl_formatlist.php');
 include('cl_regex.php');
 
-$br = false;    
-$format_path = NULL;
-$input_path = "php://stdin";
-$output_path = "php://stdout";
-
-function processArguments() {
-    global $argc, $argv;
-    global $br, $format_path, $input_path, $output_path; 
+function processArguments(&$argc, &$argv, &$br, &$format_path, &$input_path, &$output_path) {
+    $br = false;    
+    $format_path = NULL;
+    $input_path = "php://stdin";
+    $output_path = "php://stdout";
 
     $arguments = getopt("", array("help::","br::","format::","input::","output::"));
 
@@ -59,7 +56,12 @@ function processArguments() {
         $output_path = $arguments["output"];
 }
 
-processArguments();
+$br;    
+$format_path;
+$input_path;
+$output_path;
+
+processArguments($argc, $argv, $br, $format_path, $input_path, $output_path);
 
 $format_list = new FormatList;
 if ($format_list->initFromFile($format_path) === false) {
