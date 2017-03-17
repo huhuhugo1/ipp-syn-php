@@ -10,6 +10,7 @@ class FormatList {
         return array_keys($this->format_list);
     }
 
+    //Loading from file
     public function initFromFile($format_path) {
         if (is_file($format_path) === false || ($format_file = @fopen($format_path, "r")) === false) {
             return $this->format_list;
@@ -32,6 +33,7 @@ class FormatList {
         return $this->format_list;
     }
 
+    //Generate tags based on format options
     public function getTags($ipp_regex) {
         $opening = "";
         $closing = "";

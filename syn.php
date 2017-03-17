@@ -4,6 +4,7 @@ include('cl_document.php');
 include('cl_formatlist.php');
 include('cl_regex.php');
 
+//Process arguments
 function processArguments(&$argc, &$argv, &$br, &$format_path, &$input_path, &$output_path) {
     $br = false;    
     $format_path = NULL;
@@ -61,20 +62,24 @@ $format_path;
 $input_path;
 $output_path;
 
+//Processing arguments
 processArguments($argc, $argv, $br, $format_path, $input_path, $output_path);
 
+//Loading format file
 $format_list = new FormatList;
 if ($format_list->initFromFile($format_path) === false) {
     fwrite(STDERR, "Invalid format of formating file!\n");
     exit(4);
 }
 
+//Loading document
 $document = new Document;
 if ($document->initFromFile($input_path) === false) {
     fwrite(STDERR, "Invalid input file!\n");
     exit(2);
 }
 
+//Searching regex matches in document
 foreach ($format_list->gets() as $ipp_regex) {
     $regex = new Regex($ipp_regex);
     if ($regex->convert() === false || $document->findRegexMatchPositions($regex) === false) {
@@ -83,12 +88,15 @@ foreach ($format_list->gets() as $ipp_regex) {
     }
 }
 
+//Inserting HTML tags
 foreach ($format_list->gets() as $ipp_regex) {
     $document->highlightDocument($ipp_regex, $format_list->getTags($ipp_regex));
 }
 
+//Enabling <br /> tags
 $document->enableBr($br);
 
+//Writing formated document to file
 if (@file_put_contents($output_path, $document) === false){
     fwrite(STDERR, "Output file error!\n");
     exit(3);

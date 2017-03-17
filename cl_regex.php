@@ -8,6 +8,7 @@ class Regex {
         $this->pcre_regex = "";
     }
 
+    //Convert IPP regex to PCRE regex
     function convert() {          
         $PCRE_metachars = array("^", "$", "?", "[", "]", "{", "}", "\\", "-", "/"); // "/" - slash needs to be escaped
         $common_metachars = array(".", "|", "*", "+", "(", ")");
@@ -104,8 +105,5 @@ class Regex {
         return true;
     }
 }
-
-
-
 
 ?>
